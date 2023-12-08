@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CSharpBot" GeneratedClassName="Settings1">
+  <Profiles />
+  <Settings>
+    <Setting Name="DISCORD_TOKEN" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MTE3MDI4NTYyMjc2Njg3NDYyNA.GwEmTr.RneWk3VDD_j96bgQtcfvmp5ZqzeUaMOdkW4Uho</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
