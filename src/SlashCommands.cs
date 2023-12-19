@@ -1,10 +1,15 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus;
+using DSharpPlus.Exceptions;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
 using DSharpPlus.SlashCommands.Attributes;
+
+#pragma warning disable CS8625
+#pragma warning disable CS8602
+#pragma warning disable CS8604
 
 namespace PixelBot
 {
@@ -20,7 +25,7 @@ namespace PixelBot
         private static readonly HttpClient factClient = new() { BaseAddress = new Uri("https://api.api-ninjas.com/") };
 
         [SlashCommand("ban", "Ban the specified user.")]
-        public async Task BanCommand
+        public static async Task BanCommand
         (
             InteractionContext ctx,
             [Option("member", "Member to ban")] 
@@ -93,7 +98,7 @@ namespace PixelBot
         }
 
         [SlashCommand("unban", "Unban the specified user")]
-        public async Task UnbanCommand
+        public static async Task UnbanCommand
         (
             InteractionContext ctx,
             [Option("id", "User ID")]
@@ -132,7 +137,7 @@ namespace PixelBot
         }
 
         [SlashCommand("timeout", "Times-out the specified user")]
-        public async Task TimeoutCommand(
+        public static async Task TimeoutCommand(
         InteractionContext ctx,
             [Option("user", "User to timeout")]
         DiscordUser user,
@@ -210,7 +215,7 @@ namespace PixelBot
         }
 
         [SlashCommand("endtimeout", "Ends the timeout for a specified user")]
-        public async Task EndTimeoutCommand(
+        public static async Task EndTimeoutCommand(
         InteractionContext ctx,
             [Option("user", "User for ending timeout")]
         DiscordUser user,
@@ -272,12 +277,9 @@ namespace PixelBot
                         );
                     await member.SendMessageAsync(endTimeoutDM);
                 }
-                catch (Exception ex)
+                catch (UnauthorizedException)
                 {
-                    if (ex.Message.Contains("403"))
-                    {
-                        endTimeoutServerMessage = endTimeoutServerMessage.WithContent("*Could not DM!*");
-                    }
+                    endTimeoutServerMessage = endTimeoutServerMessage.WithContent("*Could not DM!*");
                 }
             }
             else
@@ -288,7 +290,7 @@ namespace PixelBot
         }
 
         [SlashCommand("kick", "Kick the specified user.")]
-        public async Task KickCommand(
+        public static async Task KickCommand(
             InteractionContext ctx,
             [Option("user", "User to kick")]
             DiscordUser user,
@@ -337,12 +339,9 @@ namespace PixelBot
                         )
                     );
                 }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("403"))
-                    {
-                        kickServerMessage = kickServerMessage.WithContent("*Could not DM!*");
-                    }
+                catch (UnauthorizedException)
+                { 
+                    kickServerMessage = kickServerMessage.WithContent("*Could not DM!*");
                 }
             }
             else
@@ -353,7 +352,7 @@ namespace PixelBot
         }
 
         [SlashCommand("softban", "Softbans the specified user")]
-        public async Task SoftbanCommand
+        public static async Task SoftbanCommand
         (
             InteractionContext ctx,
             [Option("user", "User to softban")]
@@ -426,7 +425,7 @@ namespace PixelBot
         }
 
         [SlashCommand("avatar", "Gets the avatar of the specfied user")]
-        public async Task AvatarCommand
+        public static async Task AvatarCommand
         (
             InteractionContext ctx,
             [Option("user", "User to get the avatar from")]
@@ -447,7 +446,7 @@ namespace PixelBot
         }
 
         [SlashCommand("check", "Background check a Roblox account")]
-        public async Task CheckCommand
+        public static async Task CheckCommand
         (
             InteractionContext ctx,
             [Option("user", "User to background check")]
@@ -461,8 +460,8 @@ namespace PixelBot
             }
 
             bool inCUSA = false;
-            string inventoryVisibility = "";
-            string badgesState = "";
+            string inventoryVisibility;
+            string badgesState;
             DiscordMember member = await ctx.Guild.GetMemberAsync(user.Id);
 
             if (member.Nickname == null)
@@ -533,10 +532,7 @@ namespace PixelBot
             var thumbnailResponse = await thumbnailClient.GetAsync($"v1/users/avatar-headshot?userIds={userID}&size=150x150&format=Png&isCircular=false");
 
             string groupResponseString = await groupResponse.Content.ReadAsStringAsync();
-            if (groupResponseString.Contains("4219097"))
-            {
-                inCUSA = true;
-            }
+            if (groupResponseString.Contains("4219097")) inCUSA = true;
 
             string friendsResponseString = await friendsResponse.Content.ReadAsStringAsync();
             JObject friendsResponseParsed = JObject.Parse(friendsResponseString);
@@ -598,7 +594,7 @@ namespace PixelBot
         }
 
         [SlashCommand("cat", "Returns a random cat image")]
-        public async Task CatCommand
+        public static async Task CatCommand
         (
             InteractionContext ctx
         )
@@ -619,7 +615,7 @@ namespace PixelBot
         }
 
         [SlashCommand("dog", "Returns a random dog image")]
-        public async Task DogCommand
+        public static async Task DogCommand
         (
             InteractionContext ctx
         )
@@ -640,7 +636,7 @@ namespace PixelBot
         }
 
         [SlashCommand("fact", "Returns a random fact")]
-        public async Task FactCommand
+        public static async Task FactCommand
         (
             InteractionContext ctx
         )
@@ -675,10 +671,7 @@ namespace PixelBot
         )
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            if (user == null)
-            {
-                user = ctx.User;
-            }
+            if (user == null) user = ctx.User;
             DiscordMember member = await ctx.Guild.GetMemberAsync(user.Id);
             await member.ModifyAsync(x => x.Nickname = nickname);
             var nicknameChangeServerMessage = new DiscordWebhookBuilder()
@@ -691,7 +684,7 @@ namespace PixelBot
                         $" Successfully set {user.Username}{((user.Username.EndsWith('s')) ? "\'" : "\'s")} nickname to {nickname}")
                     .WithTimestamp(DateTime.Now)
                     .WithFooter(ctx.User.Username, ctx.User.AvatarUrl)
-            );
+            ); ;
             if (!member.IsBot)
             {
                 try
