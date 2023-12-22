@@ -644,7 +644,7 @@ namespace PixelBot
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
             if (!factClient.DefaultRequestHeaders.Contains("X-Api-Key"))
             {
-                factClient.DefaultRequestHeaders.Add("X-Api-Key", "fTik0VLOxu8ttx7ieclFMQ==Qfl1cDjMGHc52z8n");
+                factClient.DefaultRequestHeaders.Add("X-Api-Key", "");
             }
             var factResponse = await factClient.GetAsync("v1/facts?limit=1");
             string factResponseString = await factResponse.Content.ReadAsStringAsync();
