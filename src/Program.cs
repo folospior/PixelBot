@@ -1,4 +1,4 @@
-﻿/*
+﻿    /*
  * CHANGE YOUR TOKEN ON LINE 25
  * BEFORE STARTING THE BOT
  *
@@ -15,14 +15,25 @@ namespace PixelBot
 {
     class Program
     {
-        private static readonly HttpClient xpClient = new() { BaseAddress = new Uri("https://api.clanlabs.co/") };
-        private static readonly HttpClient userClient = new() { BaseAddress = new Uri("https://users.roblox.com/") };
         public static async Task Main()
         {
+            if (Environment.GetEnvironmentVariable("DISCORD_TOKEN") == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("It seems that this is the first time you are running the bot.");
+                Console.WriteLine("A Discord bot token is needed for further continuing.");
+                Console.WriteLine("Instructions on getting the token are in the README.md file.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("You will need to open the bot executable once again after inputting the token.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Please enter your bot token: ");
+                Environment.SetEnvironmentVariable("DISCORD_TOKEN", Console.ReadLine());
+                return;
+            }
             
             var discord = new DiscordClient(new DiscordConfiguration()
             {
-                Token = "INSERT YOUR TOKEN HERE",
+                Token = Environment.GetEnvironmentVariable("DISCORD_TOKEN"),
                 TokenType = TokenType.Bot,
                 Intents = DiscordIntents.All
             });

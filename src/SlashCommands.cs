@@ -2,10 +2,13 @@
 using DSharpPlus.SlashCommands;
 using DSharpPlus;
 using DSharpPlus.Exceptions;
+using DSharpPlus.Interactivity;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
 using DSharpPlus.SlashCommands.Attributes;
+using System.Net.Http.Headers;
+using DSharpPlus.Interactivity.Extensions;
 
 #pragma warning disable CS8625
 #pragma warning disable CS8602
@@ -710,6 +713,46 @@ namespace PixelBot
                 nicknameChangeServerMessage = nicknameChangeServerMessage.WithContent("*Could not DM!*");
             }
             await ctx.EditResponseAsync(nicknameChangeServerMessage);
+        }
+        [SlashCommand("ticketsetup", "Set-up the ticket system")]
+        public static async Task TicketSetupCommand
+        (
+            InteractionContext ctx,
+            [Option("channel", "Ticket channel")]
+            DiscordChannel ticketChannel
+        )
+        {
+            await ctx.DeferAsync(true);
+            var ticketSetupModal = new DiscordInteractionResponseBuilder()
+                .WithTitle("Ticket System Setup")
+                .WithCustomId("ticketSetupModal")
+                .AddComponents(new TextInputComponent[]
+                {
+                    new("Ticket Option 1 Title", "ticket1-title"),
+                    new("Ticket Option 1 Description", "ticket1-description", null, null, false, TextInputStyle.Paragraph),
+                    new("Ticket Option 2 Title", "ticket2-title", null, null, false),
+                    new("Ticket Option 2 Description", "ticket2-description", null, null, false, TextInputStyle.Paragraph),
+                    new("Ticket Option 3 Title", "ticket3-title", null, null, false),
+                    new("Ticket Option 3 Description", "ticket3-description", null, null, false, TextInputStyle.Paragraph),
+                    new("Ticket Option 4 Title", "ticket4-title", null, null, false),
+                    new("Ticket Option 4 Description", "ticket4-description", null, null, false, TextInputStyle.Paragraph),
+                    new("Ticket Option 5 Title", "ticket5-title", null, null, false),
+                    new("Ticket Option 5 Description", "ticket5-description", null, null, false, TextInputStyle.Paragraph)
+                }
+            );
+
+            var modalResponse = await ctx.Client.GetInteractivity().WaitForModalAsync("ticketSetupModal");
+
+            string ticketOptionOneTitle = modalResponse.Result.Values["ticket1-title"];
+            string? ticketOptionOneDescription = modalResponse.Result.Values["ticket1-description"];
+            string? ticketOptionTwoTitle = modalResponse.Result.Values["ticket2-title"];
+            string? ticketOptionTwoDescription = modalResponse.Result.Values["ticket2-description"];
+            string? ticketOptionThreeTitle = modalResponse.Result.Values["ticket3-title"];
+            string? ticketOptionThreeDescription = modalResponse.Result.Values["ticket3-description"];
+            string? ticketOptionFourTitle = modalResponse.Result.Values["ticket4-title"];
+            string? ticketOptionFourDescription = modalResponse.Result.Values["ticket4-description"];
+            string? ticketOptionFiveTitle = modalResponse.Result.Values["ticket5-title"];
+            string? ticketOptionFiveDescription = modalResponse.Result.Values["ticket5-description"];
         }
     }
 }
